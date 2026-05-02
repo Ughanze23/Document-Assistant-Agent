@@ -9,11 +9,11 @@ from langgraph.prebuilt import create_react_agent, tools_condition, ToolNode
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage, ToolMessage
 import re
 import operator
-from schemas import (
+from src.schemas import (
     UserIntent, SessionState,
     AnswerResponse, SummarizationResponse, CalculationResponse, UpdateMemoryResponse
 )
-from prompts import get_intent_classification_prompt, get_chat_prompt_template, MEMORY_SUMMARY_PROMPT
+from src.prompts import get_intent_classification_prompt, get_chat_prompt_template, MEMORY_SUMMARY_PROMPT
 
 
 # TODO: The AgentState class is already implemented for you.  Study the

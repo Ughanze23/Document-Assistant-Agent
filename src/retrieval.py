@@ -2,7 +2,7 @@ import json
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import re
-from schemas import DocumentChunk
+from src.schemas import DocumentChunk
 
 
 @dataclass

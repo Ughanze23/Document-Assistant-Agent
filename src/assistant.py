@@ -7,11 +7,11 @@ import uuid
 from langchain_core.messages import BaseMessage
 from langchain_openai import ChatOpenAI
 
-from schemas import SessionState
-from retrieval import SimulatedRetriever
-from tools import get_all_tools, ToolLogger
-from agent import create_workflow, AgentState
-from prompts import MEMORY_SUMMARY_PROMPT
+from src.schemas import SessionState
+from src.retrieval import SimulatedRetriever
+from src.tools import get_all_tools, ToolLogger
+from src.agent import create_workflow, AgentState
+from src.prompts import MEMORY_SUMMARY_PROMPT
 
 
 class DocumentAssistant:
