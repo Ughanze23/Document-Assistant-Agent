@@ -34,6 +34,7 @@ logs/
 CLAUDE.md
 # Claude Code
 .claude/settings.local.json
+.mcp.json
 
 # OS
 .DS_Store

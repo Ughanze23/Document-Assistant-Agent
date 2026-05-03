@@ -16,5 +16,6 @@
       "Read"
     ],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": ["Docs by LangChain"]
 }
