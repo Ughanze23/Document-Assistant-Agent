@@ -31,6 +31,9 @@ pyvenv.cfg
 sessions/
 logs/
 *.log
+CLAUDE.md
+# Claude Code
+.claude/settings.local.json
 
 # OS
 .DS_Store
