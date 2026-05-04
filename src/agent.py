@@ -160,9 +160,9 @@ def update_memory(state: AgentState) -> AgentState:
 
     response = structured_llm.invoke(prompt_with_history)
     return {
-        "conversation_summary":  # TODO: Extract summary from response
-            "active_documents":  # TODO: Update with the current active documents
-    "next_step":  # TODO: Update the next step to end
+        "conversation_summary":  "",# TODO: Extract summary from response
+        "active_documents":  "",# TODO: Update with the current active documents
+        "next_step":  ""# TODO: Update the next step to end
     }
 
     def should_continue(state: AgentState) -> str:
