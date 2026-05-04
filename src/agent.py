@@ -16,10 +16,6 @@ from src.schemas import (
 from src.prompts import get_intent_classification_prompt, get_chat_prompt_template, MEMORY_SUMMARY_PROMPT
 
 
-# TODO: The AgentState class is already implemented for you.  Study the
-# structure to understand how state flows through the LangGraph
-# workflow.  See README.md Task 2.1 for detailed explanations of
-# each property.
 class AgentState(TypedDict):
     """
     The agent state object
@@ -44,8 +40,8 @@ class AgentState(TypedDict):
     session_id: Optional[str]
     user_id: Optional[str]
 
-    # TODO: Modify actions_taken to use an operator.add reducer
-    actions_taken: Annotated[List[str]]
+
+    actions_taken: Annotated[List[str],add_messages]
 
 
 def invoke_react_agent(response_schema: type[BaseModel], messages: List[BaseMessage], llm, tools) -> (
@@ -78,17 +74,25 @@ def classify_intent(state: AgentState, config: RunnableConfig) -> AgentState:
     llm = config.get("configurable").get("llm")
     history = state.get("messages", [])
 
-    # TODO Configure the llm chat model for structured output
+    # Configure the llm chat model for structured output
+    structured_llm = llm.with_structured_output(UserIntent)
+    
 
-    # TODO Create a formatted prompt with conversation history and user input
-
-    next_step = "qa"
-
-    # TODO: Add conditional logic to set next_step based on intent
+    #Create a formatted prompt with conversation history and user input
+    prompt = get_intent_classification_prompt()
+    formated_prompt = prompt.invoke({
+        "user_input": state.get("user_input", ""),
+        "conversation_history": history,
+    })
+    intent_response = structured_llm.invoke(formated_prompt)
+    
+    #Add conditional logic to set next_step based on intent
+    next_step = intent_response.intent_type if intent_response.confidence > 0.5 else "unknown"
 
     return {
         "actions_taken": ["classify_intent"],
-        # TODO: Update state intent and next_step
+        "intent": intent_response,
+        "next_step": next_step
     }
 
 
