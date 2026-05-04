@@ -87,7 +87,16 @@ def classify_intent(state: AgentState, config: RunnableConfig) -> AgentState:
     intent_response = structured_llm.invoke(formated_prompt)
     
     #Add conditional logic to set next_step based on intent
-    next_step = intent_response.intent_type if intent_response.confidence > 0.5 else "unknown"
+    next_step = intent_response.intent_type 
+
+    if intent_response.intent_type == "qa":
+        next_step = "qa"
+    elif intent_response.intent_type == "summarization":
+        next_step = "summarization"
+    elif intent_response.intent_type == "calculation":
+        next_step = "calculation"
+    else:
+        next_step = "qa" # Default to QA if intent is unknown, you can also choose to end the workflow or ask for clarification
 
     return {
         "actions_taken": ["classify_intent"],
