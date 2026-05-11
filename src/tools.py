@@ -119,8 +119,6 @@ def create_calculator_tool(logger: ToolLogger):
             # Safely evaluate expression
             result = eval(expression, {"__builtins__": {}}, {})
 
-            formatted_result = f"Calculation Result: {expression} = {result}"
-
             # Log successful tool usage
             logger.log_tool_use(
                 "calculator",
@@ -128,7 +126,7 @@ def create_calculator_tool(logger: ToolLogger):
                 {"result": result}
             )
 
-            return formatted_result
+            return str(result)
 
         except ZeroDivisionError:
             error_msg = "Error: Division by zero is not allowed."
