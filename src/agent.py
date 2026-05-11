@@ -14,6 +14,8 @@ from src.schemas import (
     UserIntent, SessionState,
     AnswerResponse, SummarizationResponse, CalculationResponse, UpdateMemoryResponse
 )
+from langgraph.checkpoint.memory import MemorySaver
+
 from src.prompts import get_intent_classification_prompt, get_chat_prompt_template, MEMORY_SUMMARY_PROMPT
 
 
@@ -205,43 +207,42 @@ def update_memory(state: AgentState, config: RunnableConfig) -> AgentState:
         "next_step":  "end"# TODO: Update the next step to end
     }
 
-    def should_continue(state: AgentState) -> str:
-        """Router function"""
-        return state.get("next_step", "end")
 
-    def create_workflow(llm, tools):
-        """
-        Creates the LangGraph agents.
-        Compiles the workflow with an InMemorySaver checkpointer to persist state.
-        """
-        workflow = StateGraph(AgentState)
+def should_continue(state: AgentState) -> str:
+    """Router function"""
+    return state.get("next_step", "end")
 
-        # TODO: Add all the nodes to the workflow by calling workflow.add_node(...)
-        workflow.add_node("classify_intent", classify_intent)
-        workflow.add_node("qa", qa_agent)
-        workflow.add_node("summarization", summarization_agent)
-        workflow.add_node("calculation", calculation_agent)
-        workflow.add_node("update_memory", update_memory)
 
-        workflow.set_entry_point("classify_intent")
-        workflow.add_conditional_edges(
-            "classify_intent",
-            should_continue,
-            {
-                # TODO: Map the intent strings to the correct node names
-                "qa": "qa",
-                "summarization": "summarization",
-                "calculation": "calculation",   
-                "end": END
-            }
-        )
+def create_workflow(llm, tools):
+    """
+    Creates the LangGraph agents.
+    Compiles the workflow with an InMemorySaver checkpointer to persist state.
+    """
+    memory = MemorySaver()
+    workflow = StateGraph(AgentState)
 
-        memory = InMemorySaver()
-    
-        workflow.add_edge("qa", "update_memory")
-        workflow.add_edge("summarization", "update_memory")
-        workflow.add_edge("calculation", "update_memory")   
+    workflow.add_node("classify_intent", classify_intent)
+    workflow.add_node("qa", qa_agent)
+    workflow.add_node("summarization", summarization_agent)
+    workflow.add_node("calculation", calculation_agent)
+    workflow.add_node("update_memory", update_memory)
 
-        workflow.add_edge("update_memory", END)
+    workflow.set_entry_point("classify_intent")
+    workflow.add_conditional_edges(
+        "classify_intent",
+        should_continue,
+        {
+            "qa": "qa",
+            "summarization": "summarization",
+            "calculation": "calculation",
+            "end": END
+        }
+    )
 
-        return workflow.compile(memory)
+    workflow.add_edge("qa", "update_memory")
+    workflow.add_edge("summarization", "update_memory")
+    workflow.add_edge("calculation", "update_memory")
+
+    workflow.add_edge("update_memory", END)
+
+    return workflow.compile(checkpointer=memory)
