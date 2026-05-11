@@ -146,7 +146,6 @@ class DocumentAssistant:
             final_state = self.workflow.invoke(initial_state, config=config)
             # Update session with new state
             if final_state.get("messages"):
-
                 self.current_session.conversation_history.append(final_state)
                 self.current_session.last_updated = datetime.now()
                 if final_state.get("active_documents"):
@@ -154,7 +153,6 @@ class DocumentAssistant:
                         self.current_session.document_context +
                         final_state["active_documents"]
                     ))
-                self._save_session()
             return {
                 "success": True,
                 "response": final_state.get("messages")[-1].content if final_state.get("messages") else None,
@@ -170,3 +168,5 @@ class DocumentAssistant:
                 "error": str(e),
                 "response": None
             }
+        finally:
+            self._save_session()
