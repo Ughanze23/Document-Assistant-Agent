@@ -62,9 +62,7 @@ Dict[str, Any], List[str]):
     return result, tools_used
 
 
-# TODO: Implement the classify_intent function.
-# This function should classify the user's intent and set the next step in the workflow.
-# Refer to README.md Task 2.2
+
 def classify_intent(state: AgentState, config: RunnableConfig) -> AgentState:
     """
     Classify user intent and update next_step. Also records that this
@@ -96,7 +94,7 @@ def classify_intent(state: AgentState, config: RunnableConfig) -> AgentState:
     elif intent_response.intent_type == "calculation":
         next_step = "calculation"
     else:
-        next_step = "qa" # Default to QA if intent is unknown, you can also choose to end the workflow or ask for clarification
+        next_step = "qa" # Default to QA if intent is unknown, could also choose to end or ask for clarification
 
     return {
         "actions_taken": ["classify_intent"],
