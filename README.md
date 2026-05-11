@@ -10,6 +10,10 @@ The assistant classifies each user request and routes it to one of three special
 - **Summarization Agent** — extracts key points and generates summaries
 - **Calculation Agent** — performs mathematical operations on numerical document data
 
+## Agent Architecture
+
+![LangGraph Agent Architecture](./docs/langgraph_agent_architecture.png)
+
 ## Project Structure
 
 ```

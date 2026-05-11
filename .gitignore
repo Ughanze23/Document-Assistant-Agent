@@ -33,7 +33,7 @@ logs/
 *.log
 CLAUDE.md
 # Claude Code
-.claude/settings.local.json
+.claude/
 .mcp.json
 
 # OS
