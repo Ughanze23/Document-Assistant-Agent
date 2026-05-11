@@ -59,15 +59,100 @@ class ToolLogger:
             json.dump(self.logs, f, indent=2)
 
 
-# TODO: Implement the calculator tool using the @tool decorator.
-# This tool should safely evaluate mathematical expressions and log its usage.
-# Refer to README.md Task 4.1 for detailed implementation requirements.
 def create_calculator_tool(logger: ToolLogger):
     """
-    Creates a calculator tool - TO BE IMPLEMENTED
+    Creates a calculator tool that safely evaluates mathematical expressions.
     """
-    # Your implementation here
-    pass
+
+    @tool
+    def calculator(expression: str) -> str:
+        """
+        Safely evaluate a mathematical expression.
+
+        Supported operations:
+        - Addition (+)
+        - Subtraction (-)
+        - Multiplication (*)
+        - Division (/)
+        - Modulus (%)
+        - Exponents (**)
+        - Parentheses ()
+
+        Args:
+            expression: Mathematical expression to evaluate
+
+        Returns:
+            Formatted calculation result or error message
+        """
+        try:
+            # Clean expression
+            expression = expression.strip()
+
+            # Validate allowed characters
+            # Only numbers, operators, decimal points, spaces, and parentheses
+            allowed_pattern = r'^[0-9+\-*/%().\s]+$'
+
+            if not re.match(allowed_pattern, expression):
+                raise ValueError(
+                    "Invalid expression. Only basic mathematical operations are allowed."
+                )
+
+            # Block dangerous keywords/patterns
+            forbidden_patterns = [
+                "__",
+                "import",
+                "eval",
+                "exec",
+                "os",
+                "sys",
+                "subprocess",
+                "open",
+                "[",
+                "]",
+                "{",
+                "}"
+            ]
+
+            if any(pattern in expression for pattern in forbidden_patterns):
+                raise ValueError("Unsafe expression detected.")
+
+            # Safely evaluate expression
+            result = eval(expression, {"__builtins__": {}}, {})
+
+            formatted_result = f"Calculation Result: {expression} = {result}"
+
+            # Log successful tool usage
+            logger.log_tool_use(
+                "calculator",
+                {"expression": expression},
+                {"result": result}
+            )
+
+            return formatted_result
+
+        except ZeroDivisionError:
+            error_msg = "Error: Division by zero is not allowed."
+
+            logger.log_tool_use(
+                "calculator",
+                {"expression": expression},
+                {"error": error_msg}
+            )
+
+            return error_msg
+
+        except Exception as e:
+            error_msg = f"Error evaluating expression: {str(e)}"
+
+            logger.log_tool_use(
+                "calculator",
+                {"expression": expression},
+                {"error": error_msg}
+            )
+
+            return error_msg
+
+    return calculator
 
 
 def create_document_search_tool(retriever, logger: ToolLogger):
