@@ -138,13 +138,13 @@ def summarization_agent(state: AgentState, config: RunnableConfig) -> AgentState
     llm = config.get("configurable").get("llm")
     tools = config.get("configurable").get("tools")
 
-    result, tools_used = invoke_react_agent(SummarizationResponse, [], llm, tools)
-
     prompt_template = get_chat_prompt_template("summarization")
     messages = prompt_template.invoke({
         "input": state["user_input"],
         "chat_history": state.get("messages", []),
     }).to_messages()
+
+    result, tools_used = invoke_react_agent(SummarizationResponse, messages, llm, tools)
 
     return {
         "messages": result.get("messages", []),
@@ -163,13 +163,14 @@ def calculation_agent(state: AgentState, config: RunnableConfig) -> AgentState:
     """
     llm = config.get("configurable").get("llm")
     tools = config.get("configurable").get("tools")
-    result, tools_used = invoke_react_agent(CalculationResponse, [], llm, tools)
 
     prompt_template = get_chat_prompt_template("calculation")
     messages = prompt_template.invoke({
         "input": state["user_input"],
         "chat_history": state.get("messages", []),
     }).to_messages()
+
+    result, tools_used = invoke_react_agent(CalculationResponse, messages, llm, tools)
    
     return {
         "messages": result.get("messages", []),
@@ -202,7 +203,7 @@ def update_memory(state: AgentState, config: RunnableConfig) -> AgentState:
     response = structured_llm.invoke(prompt_with_history)
     return {
         "conversation_summary":  response.summary,# TODO: Extract summary from response
-        "active_documents":  response.active_documents,# TODO: Update with the current active documents
+        "active_documents":  response.document_ids,
         "next_step":  "end"# TODO: Update the next step to end
     }
 
