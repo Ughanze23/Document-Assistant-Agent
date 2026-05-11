@@ -48,12 +48,8 @@ class AgentState(TypedDict):
 
 def invoke_react_agent(response_schema: type[BaseModel], messages: List[BaseMessage], llm, tools) -> (
 Dict[str, Any], List[str]):
-    llm_with_tools = llm.bind_tools(
-        tools
-    )
-
     agent = create_react_agent(
-        model=llm_with_tools,  # Use the bound model
+        model=llm,
         tools=tools,
         response_format=response_schema,
     )
