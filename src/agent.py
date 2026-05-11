@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import create_react_agent, tools_condition, ToolNode
-from langchain.agents import create_agent
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage, ToolMessage
 import re
 import operator
@@ -53,7 +52,7 @@ Dict[str, Any], List[str]):
         tools
     )
 
-    agent = create_agent(
+    agent = create_react_agent(
         model=llm_with_tools,  # Use the bound model
         tools=tools,
         response_format=response_schema,
