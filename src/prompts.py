@@ -13,15 +13,27 @@ def get_intent_classification_prompt() -> PromptTemplate:
 Given the user input and conversation history, classify the user's intent into one of these categories:
 - qa: Questions about documents or records that do not require calculations.
 - summarization: Requests to summarize or extract key points from documents that do not require calculations.
-- calculation: Mathematical operations or numerical computations. Or questions about documents that may require calculations
-- unknown: Cannot determine the intent clearly
+- calculation: Mathematical operations or numerical computations, or questions about documents that may require calculations.
+- unknown: Cannot determine the intent clearly.
+
+Examples:
+- "What does the contract say about termination?" → intent: qa
+- "Give me a summary of the annual report." → intent: summarization
+- "What is the total revenue across all invoices?" → intent: calculation
+- "Do the thing." → intent: unknown
+
+Confidence scoring guide:
+- 0.9–1.0: The request unambiguously matches one category with no overlap.
+- 0.6–0.89: The request likely matches one category but has minor ambiguity.
+- 0.3–0.59: The intent is unclear or could reasonably belong to multiple categories.
+- 0.0–0.29: The input is too vague, incomplete, or off-topic to classify reliably.
 
 User Input: {user_input}
 
 Recent Conversation History:
 {conversation_history}
 
-Analyze the user's request and classify their intent with a confidence score and brief reasoning.
+Analyze the user's request and classify their intent. Return the intent category, a confidence score (0.0–1.0), and a brief reasoning explaining your classification.
 """
     )
 
